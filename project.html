@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screwed Sneakers</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* --- CSS RESET & LAYOUT --- */
+    :root {
+      --primary: #111;       /* Black */
+      --bg-color: #f4f4f4;   /* Light Grey */
+      --white: #fff;         /* White */
+      --accent: #28a745;     /* Green */
+    }
+    
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: sans-serif;
+      background-color: var(--bg-color);
+      margin-top: 60px; /* Navbar offset */
+    }
+
+    /* --- CUSTOM NAVBAR --- */
+    .nav-custom {
+      background: var(--white);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      padding: 10px 0;
+    }
+    .nav-brand {
+      font-weight: 800;
+      font-size: 1.5rem;
+      text-decoration: none;
+      color: var(--primary);
+      margin-right: 30px;
+    }
+    .nav-list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 20px;
+    }
+    .nav-link-custom {
+      text-decoration: none;
+      color: #555;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .nav-link-custom:hover { color: var(--primary); }
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+    .btn-cart {
+      background: transparent;
+      border: 1px solid var(--primary);
+      padding: 5px 15px;
+      border-radius: 4px;
+      position: relative;
+      cursor: pointer;
+    }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: red;
+      color: white;
+      font-size: 10px;
+      padding: 3px 6px;
+      border-radius: 50%;
+      display: none;
+    }
+
+    /* --- HERO SECTION (Sticker Shoe) --- */
+    .hero-wrap {
+      min-height: 85vh;
+      background: linear-gradient(135deg, #e0e0e0 0%, #f4f4f4 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-text {
+      position: relative;
+      color: var(--primary);
+      z-index: 2;
+    }
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .btn-hero {
+      background: var(--primary);
+      color: var(--white);
+      padding: 12px 30px;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    /* Floating Sticker Shoe */
+    .hero-sticker-img {
+      width: 100%;
+      max-width: 650px;
+      transform: rotate(-15deg);
+      filter: drop-shadow(20px 20px 30px rgba(0,0,0,0.3));
+      transition: transform 0.5s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-sticker-img:hover {
+      transform: rotate(0deg) scale(1.05);
+    }
+
+    /* --- SHOP SECTION --- */
+    .section-wrap { padding: 60px 0; }
+    
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid #ccc;
+      padding: 6px 18px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .filter-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+    
+    /* Product Card */
+    .product-box {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      padding-bottom: 15px;
+      transition: transform 0.2s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .product-box:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+    .prod-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: #f9f9f9;
+    }
+    .prod-info {
+      padding: 15px;
+      text-align: center;
+      flex-grow: 1;
+    }
+    .prod-price { font-weight: bold; color: #555; margin: 10px 0; }
+    .btn-add {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      width: 90%;
+      margin: 0 auto;
+      display: block;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .btn-add:hover { opacity: 0.9; }
+
+    /* --- MODALS --- */
+    .cart-row {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+    .cart-thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      margin-right: 15px;
+      border-radius: 4px;
+    }
+    .cart-det { flex-grow: 1; }
+    .btn-remove { color: red; cursor: pointer; }
+    
+    .history-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    /* --- FOOTER & CONTACT CSS --- */
+    .footer-wrap {
+      background: var(--primary);
+      color: #999;
+      padding: 50px 0;
+    }
+    .footer-link {
+      color: #999;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .footer-link:hover { color: var(--white); }
+    
+    #contact {
+        background: #fff;
+        padding: 60px 0;
+        margin-top: 40px;
+    }
+
+    /* --- UTILITIES --- */
+    .hidden { display: none !important; }
+    .text-success { color: var(--accent); }
+    .modal-total { font-size: 1.2rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg fixed-top nav-custom">
+    <div class="container">
+      <a class="nav-brand" href="#">Screwed</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="nav-list me-auto">
+          <li><a class="nav-link-custom" href="#men">Men</a></li>
+          <li><a class="nav-link-custom" href="#women">Women</a></li>
+          <li><a class="nav-link-custom" href="#contact">Contact</a></li>
+          <li><a class="nav-link-custom" href="#" id="btn-history">History</a></li>
+        </ul>
+        <div class="nav-right">
+          <button class="btn-cart" id="btn-view-cart">
+            <i class="bi bi-cart-fill"></i> Cart
+            <span class="cart-badge" id="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero-wrap">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 hero-text text-center text-lg-start">
+          <span class="badge bg-dark mb-2">New 2026 Collection</span>
+          <h1 class="hero-title">Sneakers for<br>Heavy Days.</h1>
+          <p class="lead mb-4 text-muted">Clean shapes. No nonsense. Just daily comfort.</p>
+          <a href="#shop" class="btn-hero">Shop Now</a>
+        </div>
+        
+        <div class="col-lg-6 d-none d-lg-block text-center">
+           <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&fit=crop" class="hero-sticker-img" alt="Hero Sticker Shoe">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="shop" class="section-wrap">
+    <div class="container">
+      
+      <div class="toolbar">
+        <div>
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="men">Men</button>
+          <button class="filter-btn" data-filter="women">Women</button>
+          <button class="filter-btn" data-filter="kids">Kids</button>
+        </div>
+        <div>
+          <input type="text" id="code-input" placeholder="SCREW10" style="padding: 6px;">
+          <button class="filter-btn" id="btn-apply" style="background: #333; color: #fff; border:none;">Apply</button>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        
+        <div class="col-md-3 col-sm-6 item-card" data-cat="men">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80" class="prod-img" alt="Raptor Dust">
+            <div class="prod-info">
+              <h5>Raptor Dust</h5>
+              <p class="prod-price">₹3299</p>
+            </div>
+            <button class="btn-add" data-name="Raptor Dust" data-price="3299">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="men">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=500&q=80" class="prod-img" alt="Street Ash">
+            <div class="prod-info">
+              <h5>Street Ash</h5>
+              <p class="prod-price">₹2999</p>
+            </div>
+            <button class="btn-add" data-name="Street Ash" data-price="2999">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="men">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&q=80" class="prod-img" alt="Titan Black">
+            <div class="prod-info">
+              <h5>Titan Black</h5>
+              <p class="prod-price">₹3599</p>
+            </div>
+            <button class="btn-add" data-name="Titan Black" data-price="3599">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="men">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500&q=80" class="prod-img" alt="Aero White">
+            <div class="prod-info">
+              <h5>Aero White</h5>
+              <p class="prod-price">₹2799</p>
+            </div>
+            <button class="btn-add" data-name="Aero White" data-price="2799">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 item-card" data-cat="women">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&q=80" class="prod-img" alt="Cloud Rose">
+            <div class="prod-info">
+              <h5>Cloud Rose</h5>
+              <p class="prod-price">₹2899</p>
+            </div>
+            <button class="btn-add" data-name="Cloud Rose" data-price="2899">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="women">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500&q=80" class="prod-img" alt="Midnight Cream">
+            <div class="prod-info">
+              <h5>Midnight Cream</h5>
+              <p class="prod-price">₹3199</p>
+            </div>
+            <button class="btn-add" data-name="Midnight Cream" data-price="3199">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="women">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=500&q=80" class="prod-img" alt="Solar Flare">
+            <div class="prod-info">
+              <h5>Solar Flare</h5>
+              <p class="prod-price">₹3099</p>
+            </div>
+            <button class="btn-add" data-name="Solar Flare" data-price="3099">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="women">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=500&q=80" class="prod-img" alt="Lunar Grey">
+            <div class="prod-info">
+              <h5>Lunar Grey</h5>
+              <p class="prod-price">₹2899</p>
+            </div>
+            <button class="btn-add" data-name="Lunar Grey" data-price="2899">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 item-card" data-cat="kids">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500&q=80" class="prod-img" alt="Mini Blaze">
+            <div class="prod-info">
+              <h5>Mini Blaze</h5>
+              <p class="prod-price">₹1899</p>
+            </div>
+            <button class="btn-add" data-name="Mini Blaze" data-price="1899">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="kids">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1514989940723-e88754dfe8a5?w=500&q=80" class="prod-img" alt="Hyper Lime">
+            <div class="prod-info">
+              <h5>Hyper Lime</h5>
+              <p class="prod-price">₹1999</p>
+            </div>
+            <button class="btn-add" data-name="Hyper Lime" data-price="1999">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="kids">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=500&q=80" class="prod-img" alt="Tiny Titan">
+            <div class="prod-info">
+              <h5>Tiny Titan</h5>
+              <p class="prod-price">₹1599</p>
+            </div>
+            <button class="btn-add" data-name="Tiny Titan" data-price="1599">Add to Cart</button>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 item-card" data-cat="kids">
+          <div class="product-box">
+            <img src="https://images.unsplash.com/photo-1619703364346-0d2c0c640f5b?w=500&q=80" class="prod-img" alt="Star Hopper">
+            <div class="prod-info">
+              <h5>Star Hopper</h5>
+              <p class="prod-price">₹1799</p>
+            </div>
+            <button class="btn-add" data-name="Star Hopper" data-price="1799">Add to Cart</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+      <div class="container">
+          <div class="row justify-content-center">
+              <div class="col-md-8 text-center">
+                  <h2 class="mb-4">Get in Touch</h2>
+                  <p class="mb-4">Questions? Complaints? Compliments? We take them all.</p>
+                  <form>
+                      <div class="row g-3">
+                          <div class="col-md-6">
+                              <input type="text" class="form-control" placeholder="Name">
+                          </div>
+                          <div class="col-md-6">
+                              <input type="email" class="form-control" placeholder="Email">
+                          </div>
+                          <div class="col-12">
+                              <textarea class="form-control" rows="4" placeholder="Message"></textarea>
+                          </div>
+                          <div class="col-12">
+                              <button type="button" class="btn btn-dark px-4" onclick="alert('Sent!')">Send Message</button>
+                          </div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Your Cart</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cart-list"></div>
+          <p id="msg-discount" class="text-success hidden mt-3">10% Discount Applied!</p>
+        </div>
+        <div class="modal-footer" style="justify-content: space-between;">
+          <div class="modal-total">Total: ₹<span id="txt-total">0</span></div>
+          <button class="btn btn-dark" id="btn-checkout">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Order History</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="history-list"></div>
+        <div class="modal-footer">
+          <button class="btn btn-sm btn-outline-danger" id="btn-clear-history">Clear History</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="confirmModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+        <h3 class="mt-2">Order Placed!</h3>
+        <p>Saved to Local Storage.</p>
+        <div class="bg-light p-3 rounded text-start">
+            <div>Order ID: <strong id="conf-id">#</strong></div>
+            <div>Paid: <strong id="conf-amt">0</strong></div>
+        </div>
+        <button class="btn btn-dark mt-3" onclick="location.reload()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer-wrap">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Screwed</h5>
+          <p class="small">Local browser storage enabled.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <a href="#" class="footer-link">Support</a>
+          <a href="#" class="footer-link">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      // STATE
+      let cart = [];
+      let isDiscounted = false;
+
+      // 1. FILTER
+      $('.filter-btn').click(function() {
+        let cat = $(this).data('filter');
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        $('.item-card').each(function() {
+          let itemCat = $(this).data('cat');
+          (cat === 'all' || cat === itemCat) ? $(this).show() : $(this).hide();
+        });
+      });
+
+      // 2. ADD TO CART
+      $('.btn-add').click(function() {
+        let parent = $(this).closest('.product-box');
+        let item = {
+          id: Date.now(),
+          name: $(this).data('name'),
+          price: $(this).data('price'),
+          img: parent.find('img').attr('src')
+        };
+        cart.push(item);
+        updateUI();
+        alert("Added to cart");
+      });
+
+      // 3. CART LOGIC
+      function updateUI() {
+        $('#cart-count').text(cart.length).css('display', cart.length ? 'block' : 'none');
+      }
+
+      $('#btn-view-cart').click(function() {
+        let container = $('#cart-list');
+        container.empty();
+        let total = 0;
+
+        if(!cart.length) container.html('<p class="text-center text-muted">Cart is empty</p>');
+
+        cart.forEach((item, idx) => {
+          total += item.price;
+          container.append(`
+            <div class="cart-row">
+              <img src="${item.img}" class="cart-thumb">
+              <div class="cart-det">
+                <strong>${item.name}</strong><br>
+                <small>₹${item.price}</small>
+              </div>
+              <i class="bi bi-trash btn-remove" onclick="remove(${idx})"></i>
+            </div>
+          `);
+        });
+
+        if(isDiscounted && cart.length) {
+          $('#msg-discount').removeClass('hidden');
+          total = Math.round(total * 0.9);
+        } else {
+          $('#msg-discount').addClass('hidden');
+        }
+
+        $('#txt-total').text(total);
+        new bootstrap.Modal('#cartModal').show();
+      });
+
+      // Global remove function
+      window.remove = function(idx) {
+        cart.splice(idx, 1);
+        $('#btn-view-cart').click();
+        updateUI();
+      };
+
+      // 4. DISCOUNT
+      $('#btn-apply').click(function() {
+        if($('#code-input').val().trim() === 'SCREW10' && cart.length) {
+          isDiscounted = true;
+          $('#btn-view-cart').click();
+        } else {
+          alert('Invalid code or empty cart');
+        }
+      });
+
+      // 5. CHECKOUT (LOCAL STORAGE)
+      $('#btn-checkout').click(function() {
+        if(!cart.length) return alert('Cart empty');
+        
+        bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
+
+        let total = $('#txt-total').text();
+        let orderID = '#ORD-' + Math.floor(Math.random() * 9999);
+
+        let order = {
+          id: orderID,
+          date: new Date().toLocaleDateString(),
+          total: total,
+          items: cart
+        };
+
+        let history = JSON.parse(localStorage.getItem('myOrders')) || [];
+        history.unshift(order);
+        localStorage.setItem('myOrders', JSON.stringify(history));
+
+        $('#conf-id').text(orderID);
+        $('#conf-amt').text('₹' + total);
+        new bootstrap.Modal('#confirmModal').show();
+
+        cart = [];
+        updateUI();
+      });
+
+      // 6. HISTORY LOGIC
+      $('#btn-history').click(function(e) {
+        e.preventDefault();
+        let container = $('#history-list');
+        container.empty();
+        let history = JSON.parse(localStorage.getItem('myOrders')) || [];
+
+        if(!history.length) container.html('<p>No orders found.</p>');
+
+        history.forEach(ord => {
+          container.append(`
+            <div class="history-card">
+              <div class="history-header">
+                <span>${ord.id}</span>
+                <span class="text-success">₹${ord.total}</span>
+              </div>
+              <small>${ord.date} • ${ord.items.length} items</small>
+            </div>
+          `);
+        });
+
+        new bootstrap.Modal('#historyModal').show();
+      });
+
+      $('#btn-clear-history').click(function() {
+        localStorage.removeItem('myOrders');
+        $('#btn-history').click();
+      });
+
+    });
+  </script>
+</body>
+</html>
